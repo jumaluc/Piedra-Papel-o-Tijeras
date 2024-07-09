@@ -1,3 +1,5 @@
+let valido = true; 
+let validoJugar = true;
 
 const piedra1 = document.createElement("img")
 const papel1 = document.createElement("img")
@@ -85,21 +87,42 @@ tijeras1.addEventListener("click", imagenApretada);
 let clikeado = 0;
 
 function imagenApretada(e) {
+
+    if(!valido){
+        return
+    }
+
     let imagenId = e.target.id;
+
+    piedra1.style.filter = "none";
+    papel1.style.filter = "none";
+    tijeras1.style.filter = "none";
 
     if (imagenId === "piedra1") {
         clikeado = 1;
-        console.log("Se apretó PIEDRA");
+        piedra1.style.filter = "invert(100%)";
+        piedra1.style.transition = "filter 0.3s"
+
     } else if (imagenId === "papel1") {
+        papel1.style.filter = "invert(100%)";
+        papel1.style.transition = "filter 0.3s"
+
         clikeado = 2;
-        console.log("Se apretó PAPEL");
     } else if (imagenId === "tijeras1") {
+        tijeras1.style.filter = "invert(100%)";
+        tijeras1.style.transition = "filter 0.3s"
+
         clikeado = 3;
-        console.log("Se apretó TIJERA");
     }
 }
 
 boton.addEventListener("click", (e) => {
+
+    if(!validoJugar){
+        return
+    }
+
+    valido = false;
     let jugador1S;
     let jugador2S = Math.floor(Math.random() * 3) + 1;
     let resultado;
@@ -114,43 +137,37 @@ boton.addEventListener("click", (e) => {
         jugador1S = "tijeras";
     }
 
-    // Limpiar mensajes anteriores antes de mostrar el nuevo resultado
     limpiarResultadoAnterior();
 
     if (clikeado !== 0) {
         if (jugador2S === 1 && jugador1S === "piedra") {
-            resultado = "empate";
+            resultado = "Empate";
         } else if (jugador2S === 2 && jugador1S === "papel") {
-            resultado = "empate";
+            resultado = "Empate";
         } else if (jugador2S === 3 && jugador1S === "tijeras") {
-            resultado = "empate";
+            resultado = "Empate";
         } else if (jugador2S === 1 && jugador1S === "papel") {
-            resultado = "jugador 1";
+            resultado = "Jugador 1";
         } else if (jugador2S === 1 && jugador1S === "tijeras") {
-            resultado = "jugador 2";
+            resultado = "Jugador 2";
         } else if (jugador2S === 2 && jugador1S === "piedra") {
-            resultado = "jugador 2";
+            resultado = "Jugador 2";
         } else if (jugador2S === 2 && jugador1S === "tijeras") {
-            resultado = "jugador 1";
+            resultado = "Jugador 1";
         } else if (jugador2S === 3 && jugador1S === "piedra") {
-            resultado = "jugador1";
+            resultado = "Jugador1";
         } else if (jugador2S === 3 && jugador1 === "papel") {
-            resultado = "jugador 2";
+            resultado = "Jugador 2";
         }
 
-        // Aplicar filtros invertidos según la selección de jugador 2
         aplicarFiltroJugador2(jugador2S);
-
-        // Mostrar el resultado
         crearAdvertenciaGanador(resultado);
     }
 });
 
 function aplicarFiltroJugador2(jugador2S) {
-    // Reiniciar todos los filtros antes de aplicar el filtro invertido
     reiniciarFiltros();
 
-    // Aplicar el filtro invertido según la selección de jugador 2
     if (jugador2S === 1) {
         piedra2.style.filter = "invert(100%)";
     }
@@ -169,7 +186,6 @@ function reiniciarFiltros() {
 }
 
 function limpiarResultadoAnterior() {
-    // Eliminar cualquier mensaje anterior
     const mensajesAnteriores = contenedor.querySelectorAll(".mensaje-ganador");
     mensajesAnteriores.forEach((mensaje) => {
         mensaje.remove();
@@ -178,10 +194,53 @@ function limpiarResultadoAnterior() {
 
 function crearAdvertenciaGanador(resultado) {
     const ganador = document.createElement("div");
-    ganador.classList.add("mensaje-ganador"); // Agregar una clase para identificar mensajes anteriores
+    ganador.classList.add("mensaje-ganador"); 
     const mensaje = document.createElement("h3");
 
-    mensaje.innerHTML = `El ganador es ${resultado}`;
+
+    if(resultado === "Empate"){
+        mensaje.innerHTML = `¡HUBO UN ${resultado}!`
+    }
+    else{
+        mensaje.innerHTML = `¡EL GANADOR ES ${resultado}!`;
+
+    }
+
+
+
     ganador.appendChild(mensaje);
+
+    ganador.style.position = "fixed"
+    ganador.style.width = "450px"
+    ganador.style.height = "200px"
+    ganador.style.borderRadius = "19px"
+    ganador.style.marginTop = "250px"
+    ganador.style.backgroundColor =  "rgb(24, 14, 31)";
+
+    ganador.style.display = "flex"
+    ganador.style.flexDirection = "column"
+    ganador.style.justifyContent = "center"
+    ganador.style.alignItems = "center"
+
+    const aceptar = document.createElement("button")
+    aceptar.innerHTML = "ACEPTAR"
+
+    validoJugar = false; 
+
+    ganador.appendChild(aceptar)
+
+    aceptar.addEventListener("click", () => {
+        ganador.style.display = "none"; 
+        valido = true
+        reiniciarFiltros()
+        piedra1.style.filter = "none";
+        papel1.style.filter = "none";
+        tijeras1.style.filter = "none";
+        validoJugar = true;
+
+    });
+
+
     contenedor.appendChild(ganador);
+
 }
